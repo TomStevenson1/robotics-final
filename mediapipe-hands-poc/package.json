@@ -1,0 +1,16 @@
+{
+  "name": "mediapipe-hands-poc",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Local proof-of-concept UI for MediaPipe Hands",
+  "scripts": {
+    "start": "python3 -m http.server 4173"
+  },
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/drawing_utils": "^0.3.1675466124",
+    "@mediapipe/hands": "^0.4.1675469240",
+    "@mediapipe/tasks-vision": "^0.10.34"
+  }
+}
