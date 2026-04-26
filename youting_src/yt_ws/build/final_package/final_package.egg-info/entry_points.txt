@@ -1,0 +1,2 @@
+[console_scripts]
+emergency_brake_node = final_package.emergency_brake:main
