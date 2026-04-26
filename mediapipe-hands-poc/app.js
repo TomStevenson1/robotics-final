@@ -15,6 +15,8 @@ const drawingUtils = new DrawingUtils(canvasCtx);
 
 const startButton = document.getElementById("startButton");
 const stopButton = document.getElementById("stopButton");
+const fileButton = document.getElementById("fileButton");
+const fileInput = document.getElementById("fileInput");
 const statusText = document.getElementById("statusText");
 
 const controls = {
@@ -56,6 +58,7 @@ const GESTURE_LABELS = {
 
 let gestureRecognizer;
 let camera;
+let currentSource;
 let isRunning = false;
 let lastVideoTime = -1;
 
@@ -244,33 +247,74 @@ async function ensureGestureRecognizer() {
   return gestureRecognizer;
 }
 
-async function startCamera() {
+function createCameraSource() {
+  let stream = null;
+  return {
+    onEnded: null,
+    async start(videoEl) {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          facingMode: "user",
+        },
+        audio: false,
+      });
+      videoEl.srcObject = stream;
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.addEventListener("ended", () => this.onEnded?.());
+      }
+      await videoEl.play();
+    },
+    stop(videoEl) {
+      stream?.getTracks().forEach((track) => track.stop());
+      videoEl.srcObject = null;
+      stream = null;
+    },
+  };
+}
+
+function createVideoFileSource(file) {
+  let objectUrl = null;
+  return {
+    onEnded: null,
+    async start(videoEl) {
+      objectUrl = URL.createObjectURL(file);
+      videoEl.src = objectUrl;
+      videoEl.addEventListener("ended", () => this.onEnded?.(), { once: true });
+      await videoEl.play();
+    },
+    stop(videoEl) {
+      videoEl.pause();
+      videoEl.src = "";
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+      }
+    },
+  };
+}
+
+async function startPipeline(source) {
   if (isRunning) {
     return;
   }
 
   startButton.disabled = true;
+  fileButton.disabled = true;
   updateStatus("idle", "Starting");
   controlValues.gestureResult.textContent = controls.gestureDetection.checked ? "Loading" : "Off";
 
   try {
     await ensureGestureRecognizer();
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width: { ideal: 960 },
-        height: { ideal: 540 },
-        facingMode: "user",
-      },
-      audio: false,
-    });
-    videoElement.srcObject = stream;
-    await videoElement.play();
+    await source.start(videoElement);
+
+    currentSource = source;
+    currentSource.onEnded = stopPipeline;
 
     lastVideoTime = -1;
-    camera = {
-      rafId: 0,
-      stream,
-    };
+    camera = { rafId: 0 };
 
     const renderFrame = () => {
       if (!isRunning || videoElement.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -299,33 +343,37 @@ async function startCamera() {
   } catch (error) {
     console.error(error);
     updateStatus("error", "Error");
-    renderGestureResults("Could not initialize the official gesture recognizer.");
+    renderGestureResults("Could not initialize the gesture recognizer.");
     startButton.disabled = false;
+    fileButton.disabled = false;
   }
 }
 
-function stopCamera() {
+function stopPipeline() {
   if (camera?.rafId) {
     cancelAnimationFrame(camera.rafId);
   }
 
-  if (camera?.stream) {
-    camera.stream.getTracks().forEach((track) => track.stop());
-  } else if (videoElement.srcObject) {
-    videoElement.srcObject.getTracks().forEach((track) => track.stop());
-  }
-
-  videoElement.srcObject = null;
+  currentSource?.stop(videoElement);
+  currentSource = null;
   camera = null;
   isRunning = false;
   startButton.disabled = false;
+  fileButton.disabled = false;
   stopButton.disabled = true;
   syncControlLabels();
   updateStatus("idle", "Idle");
 }
 
-startButton.addEventListener("click", startCamera);
-stopButton.addEventListener("click", stopCamera);
+startButton.addEventListener("click", () => startPipeline(createCameraSource()));
+stopButton.addEventListener("click", stopPipeline);
+
+fileButton.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files?.[0];
+  if (file) startPipeline(createVideoFileSource(file));
+  fileInput.value = "";
+});
 
 Object.values(controls).forEach((control) => {
   control.addEventListener("input", () => {
