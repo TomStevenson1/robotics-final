@@ -1,5 +1,7 @@
+/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/move_control.py
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/emergency_brake.py
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__init__.py
+/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__pycache__/move_control.cpython-312.pyc
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__pycache__/emergency_brake.cpython-312.pyc
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__pycache__/__init__.cpython-312.pyc
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/ament_index/resource_index/packages/final_package
@@ -13,3 +15,4 @@
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package-0.0.0-py3.12.egg-info/requires.txt
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package-0.0.0-py3.12.egg-info/SOURCES.txt
 /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package/emergency_brake_node
+/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package/move_control_node

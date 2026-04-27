@@ -14,13 +14,16 @@ running build_py
 creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build
 creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib
 creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
+copying final_package/move_control.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
 copying final_package/emergency_brake.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
 copying final_package/__init__.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
 running install
 running install_lib
 creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/move_control.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
 copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/emergency_brake.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
 copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/__init__.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/move_control.py to move_control.cpython-312.pyc
 byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/emergency_brake.py to emergency_brake.cpython-312.pyc
 byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__init__.py to __init__.cpython-312.pyc
 running install_data
@@ -35,4 +38,5 @@ running install_egg_info
 Copying ../../build/final_package/final_package.egg-info to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package-0.0.0-py3.12.egg-info
 running install_scripts
 Installing emergency_brake_node script to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package
+Installing move_control_node script to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package
 writing list of installed files to '/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/install.log'

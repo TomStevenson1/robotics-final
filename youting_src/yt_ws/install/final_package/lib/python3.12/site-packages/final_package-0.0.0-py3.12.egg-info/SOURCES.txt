@@ -11,6 +11,7 @@ setup.py
 ../../build/final_package/final_package.egg-info/zip-safe
 final_package/__init__.py
 final_package/emergency_brake.py
+final_package/move_control.py
 launch/final.launch.py
 resource/final_package
 test/test_copyright.py

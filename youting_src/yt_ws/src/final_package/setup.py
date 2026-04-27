@@ -29,6 +29,7 @@ setup(
     entry_points={
         'console_scripts': [
             'emergency_brake_node = final_package.emergency_brake:main',
+            'move_control_node = final_package.move_control:main',
         ],
     },
 )

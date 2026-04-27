@@ -1,0 +1,44 @@
+[0.950s] Invoking command in '/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/src/final_package': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/final_package build --build-base /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build install --record /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/install.log --single-version-externally-managed install_data
+[1.272s] running egg_info
+[1.272s] creating ../../build/final_package/final_package.egg-info
+[1.294s] writing ../../build/final_package/final_package.egg-info/PKG-INFO
+[1.295s] writing dependency_links to ../../build/final_package/final_package.egg-info/dependency_links.txt
+[1.295s] writing entry points to ../../build/final_package/final_package.egg-info/entry_points.txt
+[1.295s] writing requirements to ../../build/final_package/final_package.egg-info/requires.txt
+[1.295s] writing top-level names to ../../build/final_package/final_package.egg-info/top_level.txt
+[1.295s] writing manifest file '../../build/final_package/final_package.egg-info/SOURCES.txt'
+[1.340s] reading manifest file '../../build/final_package/final_package.egg-info/SOURCES.txt'
+[1.341s] adding license file 'LICENSE'
+[1.342s] writing manifest file '../../build/final_package/final_package.egg-info/SOURCES.txt'
+[1.342s] running build
+[1.342s] running build_py
+[1.342s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build
+[1.342s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib
+[1.342s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
+[1.342s] copying final_package/move_control.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
+[1.342s] copying final_package/emergency_brake.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
+[1.342s] copying final_package/__init__.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package
+[1.343s] running install
+[1.349s] running install_lib
+[1.372s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+[1.372s] copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/move_control.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+[1.372s] copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/emergency_brake.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+[1.372s] copying /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build/lib/final_package/__init__.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package
+[1.372s] byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/move_control.py to move_control.cpython-312.pyc
+[1.373s] byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/emergency_brake.py to emergency_brake.cpython-312.pyc
+[1.374s] byte-compiling /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package/__init__.py to __init__.cpython-312.pyc
+[1.375s] running install_data
+[1.375s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/ament_index
+[1.375s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/ament_index/resource_index
+[1.375s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/ament_index/resource_index/packages
+[1.375s] copying resource/final_package -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/ament_index/resource_index/packages
+[1.375s] copying package.xml -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/final_package
+[1.376s] creating /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/final_package/launch
+[1.376s] copying launch/final.launch.py -> /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/share/final_package/launch
+[1.376s] running install_egg_info
+[1.399s] Copying ../../build/final_package/final_package.egg-info to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages/final_package-0.0.0-py3.12.egg-info
+[1.400s] running install_scripts
+[1.554s] Installing emergency_brake_node script to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package
+[1.554s] Installing move_control_node script to /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/final_package
+[1.554s] writing list of installed files to '/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/install.log'
+[1.585s] Invoked command in '/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/src/final_package' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/install/final_package/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/final_package build --build-base /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/build install --record /home/liuutin9/Desktop/robotics-final/youting_src/yt_ws/build/final_package/install.log --single-version-externally-managed install_data
