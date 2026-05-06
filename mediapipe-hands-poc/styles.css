@@ -168,15 +168,25 @@ button:disabled {
 
 .control-panel {
   display: grid;
-  gap: 10px;
   padding: 18px;
   align-content: start;
   position: sticky;
   top: 20px;
 }
 
+.panel-section {
+  display: grid;
+  gap: 10px;
+}
+
+.panel-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 14px 0;
+}
+
 .panel-heading {
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
 .panel-heading h2 {
@@ -184,6 +194,58 @@ button:disabled {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
+}
+
+.robot-connect-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ip-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 140ms ease;
+}
+
+.ip-input::placeholder {
+  color: var(--muted);
+}
+
+.ip-input:focus {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.connect-button {
+  white-space: nowrap;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+}
+
+.ros-status-chip {
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.ros-status-chip[data-state="connected"] {
+  color: var(--live);
+}
+
+.ros-status-chip[data-state="error"] {
+  color: var(--error);
+}
+
+.ros-status-chip[data-state="connecting"] {
+  color: var(--idle);
 }
 
 .control-row {
