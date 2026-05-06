@@ -30,55 +30,82 @@
         </div>
 
         <aside class="control-panel">
-          <div class="panel-heading">
-            <h2>Settings</h2>
+          <div class="panel-section">
+            <div class="panel-heading">
+              <h2>Robot</h2>
+            </div>
+
+            <div class="robot-connect-row">
+              <input
+                id="robotIpInput"
+                class="ip-input"
+                type="text"
+                placeholder="192.168.1.x"
+                spellcheck="false"
+                autocomplete="off"
+              />
+              <button id="connectButton" class="secondary-button connect-button">Connect</button>
+            </div>
+
+            <div class="control-row compact-row">
+              <span>ROS bridge</span>
+              <span id="rosStatus" class="ros-status-chip" data-state="disconnected">Disconnected</span>
+            </div>
           </div>
 
-          <label class="toggle-row" for="gestureDetection">
-            <span>Gesture detection</span>
-            <input id="gestureDetection" type="checkbox" />
-          </label>
+          <div class="panel-divider"></div>
 
-          <div class="control-row compact-row" aria-live="polite">
-            <span>Recognizer</span>
-            <span id="gestureResultValue" class="control-value">Off</span>
+          <div class="panel-section">
+            <div class="panel-heading">
+              <h2>Settings</h2>
+            </div>
+
+            <label class="toggle-row" for="gestureDetection">
+              <span>Gesture detection</span>
+              <input id="gestureDetection" type="checkbox" />
+            </label>
+
+            <div class="control-row compact-row" aria-live="polite">
+              <span>Recognizer</span>
+              <span id="gestureResultValue" class="control-value">Off</span>
+            </div>
+
+            <div id="gestureResults" class="gesture-results" aria-live="polite">
+              <div class="gesture-empty">Enable gesture detection to see per-hand results.</div>
+            </div>
+
+            <label class="control-row" for="maxHands">
+              <span>Max hands</span>
+              <span id="maxHandsValue" class="control-value">2</span>
+            </label>
+            <input id="maxHands" type="range" min="1" max="4" step="1" value="2" />
+
+            <label class="control-row" for="minDetectionConfidence">
+              <span>Detection confidence</span>
+              <span id="minDetectionConfidenceValue" class="control-value">0.50</span>
+            </label>
+            <input
+              id="minDetectionConfidence"
+              type="range"
+              min="0.1"
+              max="0.9"
+              step="0.05"
+              value="0.5"
+            />
+
+            <label class="control-row" for="minTrackingConfidence">
+              <span>Tracking confidence</span>
+              <span id="minTrackingConfidenceValue" class="control-value">0.50</span>
+            </label>
+            <input
+              id="minTrackingConfidence"
+              type="range"
+              min="0.1"
+              max="0.9"
+              step="0.05"
+              value="0.5"
+            />
           </div>
-
-          <div id="gestureResults" class="gesture-results" aria-live="polite">
-            <div class="gesture-empty">Enable gesture detection to see per-hand results.</div>
-          </div>
-
-          <label class="control-row" for="maxHands">
-            <span>Max hands</span>
-            <span id="maxHandsValue" class="control-value">2</span>
-          </label>
-          <input id="maxHands" type="range" min="1" max="4" step="1" value="2" />
-
-          <label class="control-row" for="minDetectionConfidence">
-            <span>Detection confidence</span>
-            <span id="minDetectionConfidenceValue" class="control-value">0.50</span>
-          </label>
-          <input
-            id="minDetectionConfidence"
-            type="range"
-            min="0.1"
-            max="0.9"
-            step="0.05"
-            value="0.5"
-          />
-
-          <label class="control-row" for="minTrackingConfidence">
-            <span>Tracking confidence</span>
-            <span id="minTrackingConfidenceValue" class="control-value">0.50</span>
-          </label>
-          <input
-            id="minTrackingConfidence"
-            type="range"
-            min="0.1"
-            max="0.9"
-            step="0.05"
-            value="0.5"
-          />
         </aside>
       </section>
     </main>

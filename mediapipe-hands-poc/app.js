@@ -7,6 +7,9 @@ import {
 const MODEL_ASSET_PATH =
   "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task";
 
+const DEBOUNCE_MS = 500;
+const ROSBRIDGE_PORT = 9090;
+
 const videoElement = document.querySelector(".input_video");
 const stageElement = document.querySelector(".video-stage");
 const canvasElement = document.querySelector(".output_canvas");
@@ -18,6 +21,10 @@ const stopButton = document.getElementById("stopButton");
 const fileButton = document.getElementById("fileButton");
 const fileInput = document.getElementById("fileInput");
 const statusText = document.getElementById("statusText");
+
+const robotIpInput = document.getElementById("robotIpInput");
+const connectButton = document.getElementById("connectButton");
+const rosStatusChip = document.getElementById("rosStatus");
 
 const controls = {
   gestureDetection: document.getElementById("gestureDetection"),
@@ -55,6 +62,103 @@ const GESTURE_LABELS = {
   ILoveYou: "I love you",
   None: "None",
 };
+
+// --- Rosbridge WebSocket ---
+
+let ws = null;
+let wsConnected = false;
+
+function updateRosStatus(state, label) {
+  rosStatusChip.dataset.state = state;
+  rosStatusChip.textContent = label;
+}
+
+function advertiseGestureSignal() {
+  ws.send(JSON.stringify({
+    op: "advertise",
+    topic: "/gesture_signal",
+    type: "std_msgs/String",
+  }));
+}
+
+function publishGestureSignal() {
+  if (!ws || !wsConnected) return;
+  const data = `Left:${handState.Left.stable}|Right:${handState.Right.stable}`;
+  ws.send(JSON.stringify({
+    op: "publish",
+    topic: "/gesture_signal",
+    msg: { data },
+  }));
+}
+
+function connectRosbridge(ip) {
+  if (ws) {
+    ws.close();
+    ws = null;
+  }
+
+  updateRosStatus("connecting", "Connecting...");
+  connectButton.disabled = true;
+
+  ws = new WebSocket(`ws://${ip}:${ROSBRIDGE_PORT}`);
+
+  ws.addEventListener("open", () => {
+    wsConnected = true;
+    updateRosStatus("connected", "Connected");
+    connectButton.disabled = false;
+    connectButton.textContent = "Disconnect";
+    advertiseGestureSignal();
+    localStorage.setItem("robotIp", ip);
+  });
+
+  ws.addEventListener("close", () => {
+    wsConnected = false;
+    ws = null;
+    updateRosStatus("disconnected", "Disconnected");
+    connectButton.disabled = false;
+    connectButton.textContent = "Connect";
+  });
+
+  ws.addEventListener("error", () => {
+    wsConnected = false;
+    updateRosStatus("error", "Error");
+    connectButton.disabled = false;
+    connectButton.textContent = "Connect";
+  });
+}
+
+connectButton.addEventListener("click", () => {
+  if (wsConnected) {
+    ws.close();
+    return;
+  }
+  const ip = robotIpInput.value.trim();
+  if (ip) connectRosbridge(ip);
+});
+
+// Restore last IP from localStorage
+const savedIp = localStorage.getItem("robotIp");
+if (savedIp) robotIpInput.value = savedIp;
+
+// --- Per-hand debouncing ---
+
+const handState = {
+  Left: { pending: "None", stable: "None", timer: null },
+  Right: { pending: "None", stable: "None", timer: null },
+};
+
+function setHandGesture(hand, gesture) {
+  const state = handState[hand];
+  if (gesture === state.pending) return;
+  state.pending = gesture;
+  clearTimeout(state.timer);
+  state.timer = setTimeout(() => {
+    state.stable = gesture;
+    publishGestureSignal();
+  }, DEBOUNCE_MS);
+}
+
+// --- Existing pipeline ---
 
 let gestureRecognizer;
 let camera;
@@ -182,7 +286,6 @@ function onResults(results) {
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-  // Mirror the preview so hand motion feels natural in a selfie-style view.
   canvasCtx.translate(canvasElement.width, 0);
   canvasCtx.scale(-1, 1);
   canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
@@ -207,24 +310,35 @@ function onResults(results) {
   if (!controls.gestureDetection.checked) {
     controlValues.gestureResult.textContent = "Off";
     renderGestureResults("Enable gesture detection to see per-hand results.");
+    setHandGesture("Left", "None");
+    setHandGesture("Right", "None");
     return;
   }
 
   if (!results.gestures?.length) {
     controlValues.gestureResult.textContent = "Ready";
     renderGestureResults("No hands recognized in frame.");
+    setHandGesture("Left", "None");
+    setHandGesture("Right", "None");
     return;
   }
 
+  const gestureByHand = { Left: "None", Right: "None" };
   const handResults = results.gestures.map((categories, index) => {
     const handednessLabel = results.handedness[index]?.[0]?.categoryName ?? "Unknown";
     const topGesture = categories[0]?.categoryName ?? "None";
+    if (handednessLabel === "Left" || handednessLabel === "Right") {
+      gestureByHand[handednessLabel] = topGesture;
+    }
     return {
       handednessLabel,
       topGestureLabel: formatGestureLabel(topGesture),
       categories,
     };
   });
+
+  setHandGesture("Left", gestureByHand.Left);
+  setHandGesture("Right", gestureByHand.Right);
 
   controlValues.gestureResult.textContent = `${handResults.length} hand${handResults.length === 1 ? "" : "s"}`;
   renderGestureResults("", handResults);
@@ -361,6 +475,8 @@ function stopPipeline() {
   startButton.disabled = false;
   fileButton.disabled = false;
   stopButton.disabled = true;
+  setHandGesture("Left", "None");
+  setHandGesture("Right", "None");
   syncControlLabels();
   updateStatus("idle", "Idle");
 }
