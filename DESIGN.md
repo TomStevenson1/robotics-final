@@ -170,7 +170,7 @@ Rosbridge is **not** started in the launch file. Start it separately before laun
 ros2 launch rosbridge_server rosbridge_websocket_launch.xml
 
 # Terminal 2 — start the package
-ros2 launch final_package final.launch.py --params-file <path-to-params.yaml>
+ros2 launch final_package final.launch.py
 ```
 
 ---
