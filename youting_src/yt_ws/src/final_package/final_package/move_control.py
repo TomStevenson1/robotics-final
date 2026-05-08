@@ -140,11 +140,13 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        stop_msg = TwistStamped()
-        stop_msg.header.stamp = node.get_clock().now().to_msg()
-        node.cmd_vel_pub.publish(stop_msg)
+        if rclpy.ok():
+            stop_msg = TwistStamped()
+            stop_msg.header.stamp = node.get_clock().now().to_msg()
+            node.cmd_vel_pub.publish(stop_msg)
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':
