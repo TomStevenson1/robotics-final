@@ -9,6 +9,7 @@ setup.py
 ../../build/final_package/final_package.egg-info/requires.txt
 ../../build/final_package/final_package.egg-info/top_level.txt
 ../../build/final_package/final_package.egg-info/zip-safe
+config/params.yaml
 final_package/__init__.py
 final_package/emergency_brake.py
 final_package/move_control.py

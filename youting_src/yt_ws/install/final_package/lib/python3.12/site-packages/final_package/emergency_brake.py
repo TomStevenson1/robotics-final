@@ -5,36 +5,37 @@ from std_msgs.msg import Bool
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 import math
 
+
 class EmergencyBrakeNode(Node):
     def __init__(self):
-        super().__init__('emergency_detector')
-        
-        # 配合 Gazebo Sim 的 QoS
+        super().__init__('emergency_brake_node')
+
+        self.declare_parameter('safe_distance', 0.3)
+        self.safe_distance = self.get_parameter('safe_distance').value
+
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             history=HistoryPolicy.KEEP_LAST,
             depth=10
         )
-        
+
         self.scan_sub = self.create_subscription(
             LaserScan, '/scan', self.scan_callback, qos_profile)
-        
-        # 發佈布林值訊號
+
         self.emergency_pub = self.create_publisher(Bool, '/emergency_stop_signal', 10)
-        
-        self.safe_distance = 0.6
-        self.get_logger().info("感知節點已啟動：正在監測前方障礙物...")
+
+        self.get_logger().info(
+            f'Emergency brake node initialized (safe_distance={self.safe_distance}m)...')
 
     def scan_callback(self, msg):
-        # 取得前方範圍
         front_ranges = msg.ranges[0:20] + msg.ranges[340:359]
         valid_ranges = [r for r in front_ranges if math.isfinite(r) and r > msg.range_min]
         min_dist = min(valid_ranges) if valid_ranges else float('inf')
 
         emergency_msg = Bool()
-        # 判斷是否太近
         emergency_msg.data = min_dist < self.safe_distance
         self.emergency_pub.publish(emergency_msg)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -45,7 +46,9 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

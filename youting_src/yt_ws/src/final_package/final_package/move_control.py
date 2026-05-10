@@ -95,9 +95,9 @@ class ControlNode(Node):
         linear_x = 0.0
         angular_z = 0.0
 
-        if has_forward:
+        if has_forward and (not self.is_emergency):
             linear_x = self.speed_forward
-        elif has_reverse:
+        elif has_reverse and (not self.is_emergency):
             linear_x = self.speed_reverse
 
         if has_turn_left:
@@ -114,8 +114,8 @@ class ControlNode(Node):
 
         if self.is_emergency:
             self.get_logger().warn('Obstacle detected! Stopping...')
-            self.cmd_vel_pub.publish(msg)
-            return
+            # self.cmd_vel_pub.publish(msg)
+            # return
 
         if self.last_gesture_time is None:
             self.cmd_vel_pub.publish(msg)

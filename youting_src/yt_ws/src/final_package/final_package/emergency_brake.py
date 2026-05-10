@@ -10,7 +10,7 @@ class EmergencyBrakeNode(Node):
     def __init__(self):
         super().__init__('emergency_brake_node')
 
-        self.declare_parameter('safe_distance', 0.6)
+        self.declare_parameter('safe_distance', 0.3)
         self.safe_distance = self.get_parameter('safe_distance').value
 
         qos_profile = QoSProfile(

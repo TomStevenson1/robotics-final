@@ -1,28 +1,111 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from geometry_msgs.msg import TwistStamped
+
 
 class ControlNode(Node):
     def __init__(self):
-        super().__init__('robot_control_node')
-        
-        # 訂閱緊急訊號
+        super().__init__('move_control_node')
+
+        self.declare_parameter('speeds.forward', 0.15)
+        self.declare_parameter('speeds.reverse', -0.10)
+        self.declare_parameter('speeds.turn', 0.5)
+        self.declare_parameter('watchdog_timeout', 3.0)
+
+        gesture_defaults = {
+            'gestures.Pointing_Up': 'forward',
+            'gestures.Victory': 'reverse',
+            'gestures.Open_Palm': 'stop',
+            'gestures.Closed_Fist': 'stop',
+            'gestures.Thumb_Up_Left': 'turn_left',
+            'gestures.Thumb_Up_Right': 'turn_right',
+            'gestures.Thumb_Down': '',
+            'gestures.ILoveYou': '',
+            'gestures.None': 'stop',
+        }
+        for key, default in gesture_defaults.items():
+            self.declare_parameter(key, default)
+
+        self.speed_forward = self.get_parameter('speeds.forward').value
+        self.speed_reverse = self.get_parameter('speeds.reverse').value
+        self.speed_turn = self.get_parameter('speeds.turn').value
+        self.watchdog_timeout = self.get_parameter('watchdog_timeout').value
+
+        self.gesture_map = {}
+        for key in gesture_defaults:
+            gesture_name = key.split('.', 1)[1]
+            self.gesture_map[gesture_name] = self.get_parameter(key).value
+
         self.emergency_sub = self.create_subscription(
             Bool, '/emergency_stop_signal', self.emergency_callback, 10)
-        
-        # 最終的速度發佈者 (Gazebo Sim 需要 TwistStamped)
+        self.gesture_sub = self.create_subscription(
+            String, '/gesture_signal', self.gesture_callback, 10)
+
         self.cmd_vel_pub = self.create_publisher(TwistStamped, '/cmd_vel', 10)
-        
+
         self.is_emergency = False
-        
-        # 建立定時器，每 0.1 秒執行一次控制迴圈 (10Hz)
+        self.last_gesture_time = None
+        self.current_gesture_msg = 'Left:None|Right:None'
+
         self.timer = self.create_timer(0.1, self.control_loop)
-        self.get_logger().info("控制節點已啟動：準備接收訊號控制輪子...")
+        self.get_logger().info('Move control node initialized...')
 
     def emergency_callback(self, msg):
-        # 更新當前是否有障礙物的狀態
         self.is_emergency = msg.data
+
+    def gesture_callback(self, msg):
+        self.current_gesture_msg = msg.data
+        self.last_gesture_time = self.get_clock().now()
+        self.get_logger().info(f'Gesture received: {msg.data}')
+
+    def resolve_action(self, hand, gesture):
+        compound_key = f'{gesture}_{hand}'
+        if compound_key in self.gesture_map:
+            return self.gesture_map[compound_key] or None
+        action = self.gesture_map.get(gesture)
+        return action or None
+
+    def compute_twist(self, gesture_msg):
+        parts = gesture_msg.split('|')
+        if len(parts) != 2:
+            return (0.0, 0.0)
+
+        actions = set()
+        for part in parts:
+            tokens = part.split(':', 1)
+            if len(tokens) != 2:
+                continue
+            hand, gesture = tokens[0], tokens[1]
+            action = self.resolve_action(hand, gesture)
+            if action:
+                actions.add(action)
+
+        if not actions or 'stop' in actions:
+            return (0.0, 0.0)
+
+        has_forward = 'forward' in actions
+        has_reverse = 'reverse' in actions
+        has_turn_left = 'turn_left' in actions
+        has_turn_right = 'turn_right' in actions
+
+        if (has_forward and has_reverse) or (has_turn_left and has_turn_right):
+            return (0.0, 0.0)
+
+        linear_x = 0.0
+        angular_z = 0.0
+
+        if has_forward and (not self.is_emergency):
+            linear_x = self.speed_forward
+        elif has_reverse and (not self.is_emergency):
+            linear_x = self.speed_reverse
+
+        if has_turn_left:
+            angular_z = self.speed_turn
+        elif has_turn_right:
+            angular_z = -self.speed_turn
+
+        return (linear_x, angular_z)
 
     def control_loop(self):
         msg = TwistStamped()
@@ -30,15 +113,25 @@ class ControlNode(Node):
         msg.header.frame_id = 'base_link'
 
         if self.is_emergency:
-            # 發現障礙物，強制停下
-            msg.twist.linear.x = 0.0
-            self.get_logger().warn("🚨 偵測到危險！停止中...", once=False)
-        else:
-            # 安全狀態，穩定前進
-            msg.twist.linear.x = 0.15
-            # self.get_logger().info("🟢 前方安全，穩定前進中...")
+            self.get_logger().warn('Obstacle detected! Stopping...')
+            # self.cmd_vel_pub.publish(msg)
+            # return
 
+        if self.last_gesture_time is None:
+            self.cmd_vel_pub.publish(msg)
+            return
+
+        elapsed = (self.get_clock().now() - self.last_gesture_time).nanoseconds / 1e9
+        if elapsed > self.watchdog_timeout:
+            self.get_logger().warn('Gesture signal lost, stopping...')
+            self.cmd_vel_pub.publish(msg)
+            return
+
+        linear_x, angular_z = self.compute_twist(self.current_gesture_msg)
+        msg.twist.linear.x = linear_x
+        msg.twist.angular.z = angular_z
         self.cmd_vel_pub.publish(msg)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -48,12 +141,14 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        # 安全起見，結束前發送最後一個停止指令
-        stop_msg = TwistStamped()
-        stop_msg.header.stamp = node.get_clock().now().to_msg()
-        node.cmd_vel_pub.publish(stop_msg)
+        if rclpy.ok():
+            stop_msg = TwistStamped()
+            stop_msg.header.stamp = node.get_clock().now().to_msg()
+            node.cmd_vel_pub.publish(stop_msg)
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
