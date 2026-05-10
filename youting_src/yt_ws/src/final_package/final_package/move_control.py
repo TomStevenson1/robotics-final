@@ -57,6 +57,7 @@ class ControlNode(Node):
     def gesture_callback(self, msg):
         self.current_gesture_msg = msg.data
         self.last_gesture_time = self.get_clock().now()
+        self.get_logger().info(f'Gesture received: {msg.data}')
 
     def resolve_action(self, hand, gesture):
         compound_key = f'{gesture}_{hand}'
@@ -140,11 +141,13 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        stop_msg = TwistStamped()
-        stop_msg.header.stamp = node.get_clock().now().to_msg()
-        node.cmd_vel_pub.publish(stop_msg)
+        if rclpy.ok():
+            stop_msg = TwistStamped()
+            stop_msg.header.stamp = node.get_clock().now().to_msg()
+            node.cmd_vel_pub.publish(stop_msg)
         node.destroy_node()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 if __name__ == '__main__':

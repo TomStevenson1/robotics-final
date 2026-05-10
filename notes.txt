@@ -1,0 +1,39 @@
+Workspace on lab machine
+-------------------------
+Everything lives in ~/ros_ws2/. rosbridge_suite source is in there along with final_package
+(copied over via scp). Had to switch rosbridge_suite from the default ros2 branch to the
+jazzy branch otherwise it pulls in rosidl_pycommon.interface_base_classes which doesn't
+exist on the lab's version of Jazzy. Also had to comment out ament_cmake_mypy from the
+CMakeLists.txt of rosapi, rosbridge_library, and rosbridge_server since it's not installed.
+
+Connecting from the browser
+-----------------------------
+Port 9090 is firewalled off-campus so you can't just type the IP in directly unless you're
+on UMN WiFi. The easier way that works from anywhere is an SSH tunnel:
+
+  ssh -L 9090:localhost:9090 x5000@csel-vole-fx3node-prd-08.cselabs.umn.edu 
+  (or what ever vole instance you are on)
+
+Keep that terminal open and use localhost as the robot IP in the browser.
+If you're already on UMN WiFi you can just use the hostname directly.
+
+How to start everything
+------------------------
+Terminal 1 (rosbridge):
+  source /opt/ros/jazzy/setup.bash && source ~/ros_ws2/install/setup.bash
+  ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+
+Terminal 2 (control nodes):
+  source /opt/ros/jazzy/setup.bash && source ~/ros_ws2/install/setup.bash
+  ros2 launch final_package final.launch.py
+
+Terminal 3 (simulator, needs a display):
+  source /opt/ros/jazzy/setup.bash && source ~/colcon_ws/install/setup.bash
+  ros2 launch turtlebot3_gazebo turtlebot3_world.launch.py
+
+Browser:
+  Serve mediapipe-hands-poc with: python3 -m http.server 4173
+  Enter localhost (or the hostname if on UMN WiFi) as the robot IP. Port 9090 is
+  already hardcoded in app.js.
+
+Still need to increase speed of vehcile

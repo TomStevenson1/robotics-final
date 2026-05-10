@@ -4,7 +4,7 @@ move_control_node:
       forward: 0.15
       reverse: -0.10
       turn: 0.5
-    watchdog_timeout: 3.0
+    watchdog_timeout: 10.0
     gestures:
       Pointing_Up: forward
       Victory: reverse
@@ -14,7 +14,7 @@ move_control_node:
       Thumb_Up_Right: turn_right
       Thumb_Down: ""
       ILoveYou: ""
-      None: stop
+      None: ""
 
 emergency_brake_node:
   ros__parameters:
