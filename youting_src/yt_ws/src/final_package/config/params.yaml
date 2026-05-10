@@ -14,7 +14,7 @@ move_control_node:
       Thumb_Up_Right: turn_right
       Thumb_Down: ""
       ILoveYou: ""
-      None: stop
+      None: ""
 
 emergency_brake_node:
   ros__parameters:

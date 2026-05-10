@@ -1,0 +1,65 @@
+Setup Notes
+===========
+
+Lab machines are on the cselabs.umn.edu network. ROS2 Jazzy is already installed
+on them so you don't need to worry about that.
+
+Building rosbridge
+-------------------
+This was kind of a pain. If you just clone rosbridge_suite and try to build it,
+make sure you checkout the jazzy branch first:
+
+  cd ~/ros_ws2/src/rosbridge_suite
+  git checkout jazzy
+
+The default branch (ros2) imports rosidl_pycommon.interface_base_classes which
+doesn't exist on the lab's version of Jazzy so the whole thing crashes at runtime.
+Took a while to figure out why rosapi kept dying.
+
+Also ament_cmake_mypy is not installed on the lab machines so you need to comment
+it out of CMakeLists.txt for rosapi, rosbridge_library, and rosbridge_server before
+building. Just find the find_package(ament_cmake_mypy REQUIRED) and ament_mypy()
+lines and comment them out. Build order matters too -- do it like this:
+
+  colcon build --packages-select rosbridge_msgs rosbridge_test_msgs rosapi_msgs \
+    rosbridge_library rosapi rosbridge_server
+
+Connecting from your laptop
+-----------------------------
+Port 9090 is firewalled so you can't reach it from off-campus or sometimes even
+on certain networks. The fix is an SSH tunnel which works from anywhere:
+
+  ssh -L 9090:localhost:9090 <user>@<lab-machine>.cselabs.umn.edu
+
+Keep that terminal open and use localhost as the robot IP in the browser. If you're
+on UMN WiFi you can skip the tunnel and just use the machine's hostname directly.
+
+How to start everything
+------------------------
+Terminal 1 (rosbridge):
+  source /opt/ros/jazzy/setup.bash && source ~/ros_ws2/install/setup.bash
+  ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+
+Terminal 2 (control nodes):
+  source /opt/ros/jazzy/setup.bash && source ~/ros_ws2/install/setup.bash
+  ros2 launch final_package final.launch.py
+
+Terminal 3 (simulator, needs a display):
+  source /opt/ros/jazzy/setup.bash && source ~/colcon_ws/install/setup.bash
+  ros2 launch stage_ros2 stage.launch.py use_stamped_velocity:=true world:=cave
+
+  use_stamped_velocity:=true is required since final_package publishes TwistStamped.
+  Without it Stage silently ignores all velocity commands.
+
+Browser:
+  Serve mediapipe-hands-poc with: python3 -m http.server 4173
+  Enter localhost (or hostname on UMN WiFi) as the robot IP.
+
+Bugs fixed
+-----------
+- gestures.None was mapped to "stop" in params.yaml. When only one hand is visible
+  the other hand sends None, which was overriding whatever the active hand was doing.
+  Changed it to "" so it gets ignored and single-hand gestures actually work.
+
+- Added a log line in gesture_callback in move_control.py so you can see received
+  gestures in the terminal. Really useful for checking the browser -> ROS2 pipeline.

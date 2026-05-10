@@ -57,6 +57,7 @@ class ControlNode(Node):
     def gesture_callback(self, msg):
         self.current_gesture_msg = msg.data
         self.last_gesture_time = self.get_clock().now()
+        self.get_logger().info(f'Gesture received: {msg.data}')
 
     def resolve_action(self, hand, gesture):
         compound_key = f'{gesture}_{hand}'
